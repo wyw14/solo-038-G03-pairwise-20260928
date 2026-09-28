@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/wyw14/solo-038/internal/ink"
 	"github.com/wyw14/solo-038/internal/model"
 )
 
@@ -47,4 +48,19 @@ func PersistFence(store *Store, job model.Job, operation model.OperationID, owne
 		return 0, err
 	}
 	return store.Append(event)
+}
+
+func PersistBatch(store *Store, job model.Job, operation model.OperationID, batch ink.Batch, now time.Time) (uint64, error) {
+	event, err := model.NewEvent(operation, job, "ink_batch_recorded", batch, now)
+	if err != nil {
+		return 0, err
+	}
+	sequence, err := store.Append(event)
+	if err != nil {
+		return sequence, err
+	}
+	if !store.State().IsDurable(sequence) {
+		return sequence, fmt.Errorf("ink batch sequence %d is not durable", sequence)
+	}
+	return sequence, nil
 }

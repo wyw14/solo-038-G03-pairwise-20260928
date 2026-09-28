@@ -25,6 +25,16 @@ func NewRouter(runtime *service.Runtime) http.Handler {
 		api.Get("/incidents", handler.incidents)
 		api.Get("/recovery", handler.recoveryStatus)
 		api.Post("/jobs/current/cancel", handler.cancelCurrent)
+		api.Route("/ink/batches", func(batches chi.Router) {
+			batches.Get("/", handler.inkBatches)
+			batches.Post("/", handler.createInkBatch)
+			batches.Get("/{id}", handler.inkBatch)
+			batches.Post("/{id}/weighings", handler.weighInk)
+			batches.Post("/{id}/confirm", handler.confirmInkBatch)
+			batches.Post("/{id}/bind", handler.bindInkBatch)
+			batches.Post("/{id}/refill", handler.refillInkBatch)
+			batches.Post("/{id}/scrap", handler.scrapInkBatch)
+		})
 	})
 	return router
 }

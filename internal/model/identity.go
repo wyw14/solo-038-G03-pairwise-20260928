@@ -11,6 +11,7 @@ type OperationID string
 type JobID string
 type LeaseID string
 type EventID string
+type BatchID string
 
 func NewOperationID() OperationID {
 	return OperationID(uuid.NewString())
@@ -26,6 +27,10 @@ func NewLeaseID() LeaseID {
 
 func NewEventID() EventID {
 	return EventID(uuid.NewString())
+}
+
+func NewBatchID() BatchID {
+	return BatchID(uuid.NewString())
 }
 
 func ParseJobID(value string) (JobID, error) {
@@ -50,6 +55,11 @@ func (id JobID) Valid() bool {
 }
 
 func (id LeaseID) Valid() bool {
+	_, err := uuid.Parse(string(id))
+	return err == nil
+}
+
+func (id BatchID) Valid() bool {
 	_, err := uuid.Parse(string(id))
 	return err == nil
 }
